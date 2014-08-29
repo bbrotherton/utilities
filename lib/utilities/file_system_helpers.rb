@@ -7,8 +7,15 @@ module Utilities
     end
 
     def filepath_from(filename)
-      return filename if filename.nil? || filename.length < 1
-      File.join(Dir.pwd, filename)
+      def filepath_from(filename)
+        return filename if filename.nil? || filename.length < 1
+
+        if filename[0] == '/' || filename[0] == '~' || filename[1] == ':'
+          filename
+        else
+          File.join(Dir.pwd, filename)
+        end
+      end
     end
 
   end
