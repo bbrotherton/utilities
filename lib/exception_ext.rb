@@ -4,7 +4,7 @@ require 'log4r'
 # There's gotta' be a better way! #
 ###################################
 
-ERR_CLASSES_TO_MOD = [RuntimeError, NameError, RangeError, TypeError, ZeroDivisionError]
+ERR_CLASSES_TO_MOD = [RuntimeError, RangeError, TypeError, ZeroDivisionError]
 
 # Add hook into all possible error classes
 class Exception
