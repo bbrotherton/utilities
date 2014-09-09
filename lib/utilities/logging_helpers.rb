@@ -9,6 +9,12 @@ module Utilities
 
     attr_accessor :log
 
+    @logging_config_source = Settings
+
+    def switch_logging_configuration_source(config)
+      @logging_config_source = config
+    end
+
     def setup_logging(parent_logger=nil)
       logger_name = "#{(parent_logger.nil? ? '' : ''+parent_logger+'::')}#{classname(self,MAX_CLASSNAME_LEN)}"
       create_logger(logger_name)
