@@ -27,7 +27,7 @@ module Utilities
     end
 
     def log_fullpath
-      (Settings['logs.path'] || '.') + '/' + log_filename
+      (@logging_config_source['logs.path'] || '.') + '/' + log_filename
     end
 
     def log_filename(prefix='')
@@ -48,14 +48,14 @@ module Utilities
     end
 
     def create_logger(logger_name)
-      if Settings['logs.run_silent']
+      if @logging_config_source['logs.run_silent']
         @log = Logger.root
       else
         @log = Logger.new logger_name
 
         if classname(self, MAX_CLASSNAME_LEN) == logger_name
-          level_for_screen = log_level_from_string(Settings['logs.level_screen'] || 'INFO')
-          level_for_file   = log_level_from_string(Settings['logs.level_file']   || 'ALL')
+          level_for_screen = log_level_from_string(@logging_config_source['logs.level_screen'] || 'INFO')
+          level_for_file   = log_level_from_string(@logging_config_source['logs.level_file']   || 'ALL')
 
           std_pattern = PatternFormatter.new(:pattern => "%-#{MAX_CLASSNAME_LEN}c | %-5l | %m")
           o = Log4r::StdoutOutputter.new('stdout', :level => level_for_screen,
