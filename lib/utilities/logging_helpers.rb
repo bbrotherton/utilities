@@ -9,10 +9,13 @@ module Utilities
 
     attr_accessor :log
 
-    @logging_config_source = Settings
 
     def switch_logging_configuration_source(config)
       @logging_config_source = config
+    end
+
+    def logging_config
+      @logging_config_source || Settings
     end
 
     def setup_logging(parent_logger=nil)
@@ -27,15 +30,20 @@ module Utilities
     end
 
     def log_fullpath
-      (@logging_config_source['logs.path'] || '.') + '/' + log_filename
+      (logging_config['logs.path'] || '.') + '/' + log_filename
     end
 
     def log_filename(prefix='')
       time = Time.new
-      "#{prefix.length>0 ? prefix+'_' : ''}#{classname(self)}_#{time.year.to_s.rjust(4,'0')}" +
+      "#{prefix.length>0 ? prefix+'_' : ''}#{classname(self)}" +
+          log_time_to_dotted_string(time) + "_.log"
+    end
+
+    def log_time_to_dotted_string(time)
+      "#{time.year.to_s.rjust(4,'0')}" +
           ".#{time.month.to_s.rjust(2,'0')}.#{time.day.to_s.rjust(2,'0')}" +
           ".#{time.hour.to_s.rjust(2,'0')}.#{time.min.to_s.rjust(2,'0')}" +
-          ".#{time.sec.to_s.rjust(2,'0')}.log"
+          ".#{time.sec.to_s.rjust(2,'0')}"
     end
 
     def log_level_from_string(string_level)
@@ -48,14 +56,14 @@ module Utilities
     end
 
     def create_logger(logger_name)
-      if @logging_config_source['logs.run_silent']
+      if logging_config['logs.run_silent']
         @log = Logger.root
       else
         @log = Logger.new logger_name
 
         if classname(self, MAX_CLASSNAME_LEN) == logger_name
-          level_for_screen = log_level_from_string(@logging_config_source['logs.level_screen'] || 'INFO')
-          level_for_file   = log_level_from_string(@logging_config_source['logs.level_file']   || 'ALL')
+          level_for_screen = log_level_from_string(logging_config['logs.level_screen'] || 'INFO')
+          level_for_file   = log_level_from_string(logging_config['logs.level_file']   || 'ALL')
 
           std_pattern = PatternFormatter.new(:pattern => "%-#{MAX_CLASSNAME_LEN}c | %-5l | %m")
           o = Log4r::StdoutOutputter.new('stdout', :level => level_for_screen,
