@@ -18,9 +18,9 @@ module Utilities
       @logging_config_source || Settings
     end
 
-    def setup_logging(parent_logger=nil)
+    def setup_logging(parent_logger=nil, filename_prefix='')
       logger_name = "#{(parent_logger.nil? ? '' : ''+parent_logger+'::')}#{classname(self,MAX_CLASSNAME_LEN)}"
-      create_logger(logger_name)
+      create_logger(logger_name, filename_prefix)
     end
 
     def classname(object, max_length=nil)
@@ -29,14 +29,14 @@ module Utilities
       name
     end
 
-    def log_fullpath
-      (logging_config['logs.path'] || '.') + '/' + log_filename
+    def log_fullpath(filename_prefix='')
+      (logging_config['logs.path'] || '.') + '/' + log_filename(filename_prefix)
     end
 
     def log_filename(prefix='')
       time = Time.new
-      "#{prefix.length>0 ? prefix+'_' : ''}#{classname(self)}" +
-          log_time_to_dotted_string(time) + "_.log"
+      "#{prefix.length>0 ? prefix+'_' : ''}#{classname(self)}" + "_" +
+          log_time_to_dotted_string(time) + ".log"
     end
 
     def log_time_to_dotted_string(time)
@@ -55,7 +55,7 @@ module Utilities
       eval(LNAMES[i])
     end
 
-    def create_logger(logger_name)
+    def create_logger(logger_name, filename_prefix='')
       if logging_config['logs.run_silent']
         @log = Logger.root
       else
@@ -71,7 +71,7 @@ module Utilities
           @log.outputters << o
 
           file_pattern = PatternFormatter.new(:pattern => "%d | %-#{MAX_CLASSNAME_LEN}c | %-5l | %m")
-          @log.outputters << Log4r::FileOutputter.new('file', :filename => log_fullpath,
+          @log.outputters << Log4r::FileOutputter.new('file', :filename => log_fullpath(filename_prefix),
                                                       :trunc => true, :level => level_for_file,
                                                       :formatter => file_pattern)
         end
