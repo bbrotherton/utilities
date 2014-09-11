@@ -78,5 +78,15 @@ module Utilities
       end
     end
 
+
+    # Helpers for easy logging of certain types of data
+
+    def log_list(list, label=nil, log_method=:debug)
+      label = label || "Items"
+
+      log.send(log_method, "#{label} (#{list.length}):")
+      list.each{ |item| log.send(log_method, "   * #{item}") }
+    end
+
   end
 end
