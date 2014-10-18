@@ -12,7 +12,9 @@ module Utilities
       if filename[0] == '/' || filename[0] == '~' || filename[1] == ':'
         filename
       else
-        File.join(Dir.pwd, filename)
+        fn = File.join(Dir.pwd, filename)
+        fn.gsub!("\/", "\\") if ENV['OS'] =~ /windows/i
+        fn
       end
     end
 
